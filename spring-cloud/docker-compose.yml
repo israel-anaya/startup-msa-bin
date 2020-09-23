@@ -9,31 +9,37 @@ services:
     image: startupframework/startup-msa-discovery-server:1.0.2.RELEASE
     container_name: discovery-server
     environment:
-      - JAVA_OPTS_MEM=-Xmx74M -XX:MaxMetaspaceSize=80M -Xss366K
+      - JAVA_OPTS_MEM=-Xmx74M -XX:MaxMetaspaceSize=80M -Xss366K 
       - SPRING_OPTS=
           --server.port=8761
           --spring.profiles.active=local
-          --eureka.instance.ip-address=localhost
+          --eureka.instance.preferIpAddress=true
+          --eureka.instance.ip-address=127.0.0.1
           --eureka.client.serviceUrl.defaultZone=http://localhost:8761/eureka/
+          --management.endpoints.web.exposure.include=*
+          --management.endpoint.health.show-details=ALWAYS
     ports:
       - 8761:8761
     networks:
       - spring-network
     volumes:
       - logger:/var/log/spring-boot-app/
+      #- shareclasses:/var/log/spring-boot-app/shareclasses
 
   config-server:
     image: startupframework/startup-msa-config-server:1.0.2.RELEASE
     container_name: config-server
     environment:      
-      - JAVA_OPTS_MEM=-Xmx74M -XX:MaxMetaspaceSize=80M -Xss366K
+      - JAVA_OPTS_MEM=-Xmx74M -XX:MaxMetaspaceSize=80M -Xss366K 
       - SPRING_OPTS=
         --server.port=8762
         --spring.profiles.active=local
         --spring.cloud.config.server.git.uri=https://github.com/israel-anaya/startupframework-demo-config.git 
         --spring.cloud.config.server.git.force-pull=true
-        --eureka.instance.ip-address=localhost
+        --eureka.instance.ip-address=127.0.0.1
         --eureka.client.serviceUrl.defaultZone=http://discovery-server:8761/eureka/
+        --management.endpoints.web.exposure.include=*
+        --management.endpoint.health.show-details=ALWAYS
         --startup.dependencies=discovery-server:8761
     ports:
       - 8762:8762
@@ -41,6 +47,7 @@ services:
       - spring-network
     volumes:
       - logger:/var/log/spring-boot-app/
+      #- shareclasses:/var/log/spring-boot-app/shareclasses
     depends_on:
       - discovery-server
 
@@ -48,14 +55,16 @@ services:
     image: startupframework/startup-msa-edge-server:1.0.2.RELEASE
     container_name: edge-server      
     environment:      
-      - JAVA_OPTS_MEM=-Xmx74M -XX:MaxMetaspaceSize=80M -Xss366K
+      - JAVA_OPTS_MEM=-Xmx74M -XX:MaxMetaspaceSize=80M -Xss366K 
       - SPRING_OPTS=
         --server.port=8080
         --spring.profiles.active=local
         --spring.cloud.config.discovery.enabled=false
         --spring.cloud.config.uri=http://config-server:8762
-        --eureka.instance.ip-address=localhost
+        --eureka.instance.ip-address=127.0.0.1
         --eureka.client.serviceUrl.defaultZone=http://discovery-server:8761/eureka/
+        --management.endpoints.web.exposure.include=*
+        --management.endpoint.health.show-details=ALWAYS
         --startup.dependencies=discovery-server:8761,config-server:8762
     ports:
       - 8080:8080
@@ -63,6 +72,34 @@ services:
       - spring-network
     volumes:
       - logger:/var/log/spring-boot-app/
+      #- shareclasses:/var/log/spring-boot-app/shareclasses
+    depends_on:
+      - discovery-server
+      - config-server
+
+  admin-server:
+    image: startupframework/startup-msa-admin-server:1.0.2.RELEASE
+    container_name: admin-server      
+    environment:      
+      - JAVA_OPTS_MEM=-Xmx74M -XX:MaxMetaspaceSize=80M -Xss366K 
+      - SPRING_OPTS=
+        --server.port=8081
+        --spring.profiles.active=local
+        --spring.cloud.config.discovery.enabled=false
+        --spring.cloud.config.uri=http://config-server:8762
+        --eureka.instance.ip-address=127.0.0.1
+        --spring.boot.admin.client.instance.prefer-ip=false
+        --eureka.client.serviceUrl.defaultZone=http://discovery-server:8761/eureka/
+        --management.endpoints.web.exposure.include=*
+        --management.endpoint.health.show-details=ALWAYS
+        --startup.dependencies=discovery-server:8761,config-server:8762
+    ports:
+      - 8081:8081
+    networks:
+      - spring-network
+    volumes:
+      - logger:/var/log/spring-boot-app/
+      #- shareclasses:/var/log/spring-boot-app/shareclasses
     depends_on:
       - discovery-server
       - config-server
@@ -70,4 +107,6 @@ services:
 volumes:
   logger:
     driver: local
+#  shareclasses:
+#    driver: local
 
