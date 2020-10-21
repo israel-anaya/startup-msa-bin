@@ -1,0 +1,68 @@
+{
+	"id": "startupframework",
+	"realm": "startupframework",
+	"enabled": true,
+	"requiredCredentials": [
+		"password"
+	],
+	"roles": {
+		"realm": [
+			{
+				"name": "read",
+				"description": "Read data"
+			},
+			{
+				"name": "write",
+				"description": "Write data"
+			}
+		]
+	},
+	"users": [
+		{
+			"username": "user@test.com",
+			"enabled": true,
+			"totp": false,
+			"emailVerified": false
+		}
+	],
+	"clients": [
+		{
+			"clientId": "account",
+			"name": "${client_account}",
+			"rootUrl": "${authBaseUrl}",
+			"baseUrl": "/realms/startup/account/",
+			"surrogateAuthRequired": false,
+			"enabled": true,
+			"clientAuthenticatorType": "client-secret",
+			"redirectUris": [
+				"/realms/startup/account/*"
+			],
+			"webOrigins": [
+			],
+			"notBefore": 0,
+			"bearerOnly": false,
+			"consentRequired": false,
+			"standardFlowEnabled": true,
+			"implicitFlowEnabled": true,
+			"directAccessGrantsEnabled": true,
+			"serviceAccountsEnabled": true,
+			"authorizationServicesEnabled": true,
+			"publicClient": false,
+			"frontchannelLogout": false,
+			"protocol": "openid-connect",
+			"attributes": {
+			},
+			"authenticationFlowBindingOverrides": {
+			},
+			"fullScopeAllowed": false,
+			"nodeReRegistrationTimeout": 0
+		}
+	],
+	"clientScopes": [
+		{
+			"name": "microservice",
+			"description": "Microprofile - JWT built-in scope",
+			"protocol": "openid-connect"
+		}
+	]
+}
