@@ -5,7 +5,7 @@ networks:
     driver: bridge
 
 services:
-  redis-cache:
+  redis-cache: # Redis Cache for MSA
     image: redis:alpine
     container_name: redis-cache
     ports:
@@ -13,7 +13,21 @@ services:
     networks:
       - spring-network
 
-  discovery-server:
+  msa-db: # Postgress database for MSA
+    image: postgres:11.1-alpine
+    container_name: msa-db-server      
+    environment:
+      POSTGRES_DB: postgres-msa-db
+      POSTGRES_PASSWORD: msa
+      POSTGRES_USER: msa
+    ports:
+      - 5432:5432
+    networks: 
+      - spring-network
+    volumes:
+      - msa-db-data:/var/lib/postgresql/data
+      
+  discovery-server: # Discovery Server
     image: startupframework/startup-msa-discovery-server:1.0.2.RELEASE
     container_name: discovery-server
     environment:
@@ -35,7 +49,7 @@ services:
       - logger:/var/log/spring-boot-app/
       #- shareclasses:/var/log/spring-boot-app/shareclasses
 
-  config-server:
+  config-server: # Config Server
     image: startupframework/startup-msa-config-server:1.0.2.RELEASE
     container_name: config-server
     environment:      
@@ -60,7 +74,7 @@ services:
     depends_on:
       - discovery-server
 
-  edge-server:
+  edge-server: #Edge Server or Gateway
     image: startupframework/startup-msa-edge-server:1.0.2.RELEASE
     container_name: edge-server      
     environment:      
@@ -86,7 +100,7 @@ services:
       - discovery-server
       - config-server
 
-  admin-server:
+  admin-server: # Spring Boot Admin
     image: startupframework/startup-msa-admin-server:1.0.2.RELEASE
     container_name: admin-server      
     environment:      
@@ -98,10 +112,10 @@ services:
         --spring.cloud.config.uri=http://config-server:8762
         --eureka.instance.ip-address=127.0.0.1
         --spring.boot.admin.client.instance.prefer-ip=false
-        --eureka.client.serviceUrl.defaultZone=http://discovery-server:8761/eureka/
+        --eureka.client.serviceUrl.defaultZone=http://discovery-server:8761/eureka/        
         --management.endpoints.web.exposure.include=*
-        --management.endpoint.health.show-details=ALWAYS
-        --spring.boot.admin.discovery.ignored-services=*msa*
+        --management.endpoint.health.show-details=ALWAYS 
+        --spring.boot.admin.discovery.ignored-services=*msa*       
         --spring.cloud.discovery.client.simple.instances.architecture[0].uri=http://discovery-server:8761
         --spring.cloud.discovery.client.simple.instances.architecture[0].metadata.management.context-path=/actuator
         --spring.cloud.discovery.client.simple.instances.architecture[1].uri=http://config-server:8762
@@ -123,6 +137,6 @@ services:
 volumes:
   logger:
     driver: local
-#  shareclasses:
-#    driver: local
+  msa-db-data:
+    driver: local
 
