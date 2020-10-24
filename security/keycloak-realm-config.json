@@ -8,36 +8,76 @@
 	"roles": {
 		"realm": [
 			{
-				"name": "read",
+				"name": "read-data",
 				"description": "Read data"
 			},
 			{
-				"name": "write",
+				"name": "write-data",
 				"description": "Write data"
 			}
 		]
 	},
 	"users": [
 		{
-			"username": "user@test.com",
+			"username": "read-user",
 			"enabled": true,
 			"totp": false,
-			"emailVerified": false
+			"emailVerified": false,
+			"realmRoles": [
+				"read-data"
+			],
+			"credentials": [
+				{
+					"type": "password",
+					"value": "read"
+				}
+			]
+		},
+		{
+			"username": "readwrite-user",
+			"enabled": true,
+			"totp": false,
+			"emailVerified": false,
+			"realmRoles": [
+				"read-data",
+				"write-data"
+			],
+			"credentials": [
+				{
+					"type": "password",
+					"value": "readwrite"
+				}
+			]
+		},
+		{
+			"username": "service-account-microservice",
+			"enabled": true,
+			"totp": false,
+			"emailVerified": false,
+			"serviceAccountClientId": "microservice",
+			"realmRoles": [
+				"write-data",
+				"read-data"
+			]
 		}
 	],
 	"clients": [
 		{
-			"clientId": "account",
-			"name": "${client_account}",
+			"clientId": "microservice",
+			"name": "${client_microservice}",
 			"rootUrl": "${authBaseUrl}",
-			"baseUrl": "/realms/startup/account/",
+			"baseUrl": "/realms/startup/microservice/",
 			"surrogateAuthRequired": false,
 			"enabled": true,
 			"clientAuthenticatorType": "client-secret",
+			"secret": "5894e32a-7c55-48ac-8223-3478faad88c4",
 			"redirectUris": [
-				"/realms/startup/account/*"
+				"/realms/startup/microservice/*"
 			],
-			"webOrigins": [
+			"webOrigins": [],
+			"defaultClientScopes": [
+				"read",
+				"write"
 			],
 			"notBefore": 0,
 			"bearerOnly": false,
@@ -50,19 +90,36 @@
 			"publicClient": false,
 			"frontchannelLogout": false,
 			"protocol": "openid-connect",
-			"attributes": {
-			},
-			"authenticationFlowBindingOverrides": {
-			},
-			"fullScopeAllowed": false,
+			"attributes": {},
+			"authenticationFlowBindingOverrides": {},
+			"fullScopeAllowed": true,
 			"nodeReRegistrationTimeout": 0
 		}
 	],
 	"clientScopes": [
 		{
-			"name": "microservice",
-			"description": "Microprofile - JWT built-in scope",
+			"name": "read",
+			"description": "Read",
 			"protocol": "openid-connect"
+		},
+		{
+			"name": "write",
+			"description": "Write",
+			"protocol": "openid-connect"
+		}
+	],
+	"scopeMappings": [
+		{
+			"clientScope": "read",
+			"roles": [
+				"read-data"
+			]
+		},
+		{
+			"clientScope": "write",
+			"roles": [
+				"write-data"
+			]
 		}
 	]
 }
