@@ -40,7 +40,8 @@ services:
         --eureka.client.serviceUrl.defaultZone=http://localhost:8761/eureka/
         --management.endpoints.web.exposure.include=*
         --management.endpoint.health.show-details=ALWAYS
-        --spring.boot.admin.client.instance.prefer-ip = true
+        --spring.boot.admin.client.instance.prefer-ip=true
+        --startup.dependencies=redis-cache:6379,msa-db:5432
     ports:
       - 8761:8761
     networks:
@@ -122,7 +123,7 @@ services:
         --spring.cloud.discovery.client.simple.instances.architecture[1].metadata.management.context-path=/actuator
         --spring.cloud.discovery.client.simple.instances.architecture[2].uri=http://edge-server:8080
         --spring.cloud.discovery.client.simple.instances.architecture[2].metadata.management.context-path=/actuator
-        --startup.dependencies=discovery-server:8761,config-server:8762
+        --startup.dependencies=discovery-server:8761,config-server:8762,edge-server:8080
     ports:
       - 8081:8081
     networks:
