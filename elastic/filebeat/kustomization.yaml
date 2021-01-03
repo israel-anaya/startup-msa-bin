@@ -1,0 +1,3 @@
+resources:
+  - filebeat-config.yaml
+  - filebeat-demonset.yaml

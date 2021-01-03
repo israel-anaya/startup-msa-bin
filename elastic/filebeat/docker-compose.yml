@@ -1,10 +1,16 @@
-version: '2.2'
+version: '3.8'
 services:
   filebeat:
-    image: startupframework/filebeat:1.0
+    image: startupframework/filebeat:7.10.1
     container_name: filebeat
+    environment:
+      - HTTP_SERVICE_LOG=/var/log/http-service/
+      - HTTP_SERVICE_LOG_FILES=*-ms.log
+      - LOGSTASH_HOST=logstash
+      - LOGSTASH_PORT=5044
     volumes:
-      - C:/var/log/spring-boot-app/:/var/log/spring-boot-app/
+      - ./config/filebeat.yml:/etc/filebeat/filebeat.yml:ro
+      - C:/var/log/http-service/:/var/log/http-service/
     networks:
       - elastic-network
 
