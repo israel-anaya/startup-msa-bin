@@ -1,0 +1,5 @@
+resources:
+  - namespace-startup.yaml
+  - security-db-server-storage.yaml
+  - elasticsearch-storage.yaml
+  - http-service-logs-storage.yaml

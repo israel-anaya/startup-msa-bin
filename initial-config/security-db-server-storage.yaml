@@ -1,0 +1,31 @@
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: security-db-server-pv-volume
+  namespace: startup
+  labels:
+    type: local
+    app: security-db-server
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 500Mi
+  accessModes:
+    - ReadWriteMany
+  hostPath:
+    path: "/mnt/security-db-server/data"
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: security-db-server-pv-claim
+  namespace: startup
+  labels:
+    app: security-db-server
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 500Mi

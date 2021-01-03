@@ -1,0 +1,31 @@
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: http-service-logs-pv-volume
+  namespace: startup
+  labels:
+    type: local
+    app: http-service-logs
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 500Mi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/mnt/http-service-logs/data"
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: http-service-logs-pv-claim
+  namespace: startup
+  labels:
+    app: http-service-logs
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 500Mi
