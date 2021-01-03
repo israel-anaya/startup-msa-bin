@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: security-db-server-config
+  namespace: startup
+  labels:
+    app: security-db-server
+data:
+  POSTGRES_DB: security-db
+  POSTGRES_USER: msa
+  POSTGRES_PASSWORD: msa

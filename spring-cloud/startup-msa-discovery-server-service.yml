@@ -1,0 +1,29 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    jkube.io/git-url: https://github.com/israel-anaya/startup-msa.git
+    jkube.io/git-commit: ac150c5786d3f9ee8805a03116757692374a7844
+    jkube.io/git-branch: master
+    jkube.io/scm-url: https://github.com/israel-anaya/startup-framework.git/startup-msa-discovery-server
+    jkube.io/scm-tag: HEAD
+  labels:
+    app: startup-msa-discovery-server
+    provider: jkube
+    version: 1.0.2.RELEASE
+    group: org.startupframework
+  name: startup-msa-discovery-server
+  namespace: startup
+spec:
+  ports:
+  - name: http-service
+    nodePort: 30761
+    port: 80
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: startup-msa-discovery-server
+    provider: jkube
+    group: org.startupframework
+  type: NodePort

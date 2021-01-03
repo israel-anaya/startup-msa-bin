@@ -1,0 +1,102 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    jkube.io/git-url: https://github.com/israel-anaya/startup-msa.git
+    jkube.io/git-commit: ac150c5786d3f9ee8805a03116757692374a7844
+    jkube.io/git-branch: master
+    jkube.io/scm-url: https://github.com/israel-anaya/startup-framework.git/startup-msa-admin-server
+    jkube.io/scm-tag: HEAD
+  labels:
+    app: startup-msa-admin-server
+    provider: jkube
+    version: 1.0.2.RELEASE
+    group: org.startupframework
+  name: startup-msa-admin-server
+  namespace: startup
+spec:
+  replicas: 1
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      app: startup-msa-admin-server
+      provider: jkube
+      group: org.startupframework
+  template:
+    metadata:
+      annotations:
+        jkube.io/scm-url: https://github.com/israel-anaya/startup-framework.git/startup-msa-admin-server
+        jkube.io/git-url: https://github.com/israel-anaya/startup-msa.git
+        jkube.io/scm-tag: HEAD
+        jkube.io/git-commit: ac150c5786d3f9ee8805a03116757692374a7844
+        jkube.io/git-branch: master
+      labels:
+        app: startup-msa-admin-server
+        provider: jkube
+        version: 1.0.2.RELEASE
+        group: org.startupframework
+    spec:
+      containers:
+      - env:
+        - name: KUBERNETES_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: HOSTNAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        envFrom:
+        - configMapRef:
+            name: startup-msa-admin-server
+        image: startupframework/startup-msa-admin-server:1.0.2.RELEASE
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /actuator/health
+            port: http-service
+          initialDelaySeconds: 240
+          periodSeconds: 30
+          successThreshold: 1
+          timeoutSeconds: 5
+        name: startup-msa-admin-server
+        ports:
+        - containerPort: 8080
+          name: http-service
+          protocol: TCP
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /actuator/health
+            port: http-service
+          initialDelaySeconds: 240
+          periodSeconds: 30
+          successThreshold: 1
+          timeoutSeconds: 5
+        resources:
+          limits:
+            memory: 256Mi
+          requests:
+            memory: 256Mi
+        securityContext:
+          privileged: false
+        volumeMounts:
+        - mountPath: /var/log/http-service/
+          name: http-service-logs
+      initContainers:
+      - command:
+        - chmod
+        - "777"
+        - /var/log/http-service/
+        image: busybox
+        imagePullPolicy: IfNotPresent
+        name: jkube-volume-permission
+        volumeMounts:
+        - mountPath: /var/log/http-service/
+          name: http-service-logs
+      volumes:
+      - name: http-service-logs
+        persistentVolumeClaim:
+          claimName: http-service-logs-pv-claim

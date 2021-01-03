@@ -1,0 +1,13 @@
+resources:
+  - startup-msa-discovery-server-configmap.yml
+  - startup-msa-config-server-configmap.yml
+  - startup-msa-edge-server-configmap.yml
+  - startup-msa-admin-server-configmap.yml
+  - startup-msa-discovery-server-service.yml
+  - startup-msa-config-server-service.yml
+  - startup-msa-edge-server-service.yml
+  - startup-msa-admin-server-service.yml
+  - startup-msa-discovery-server-deployment.yml
+  - startup-msa-config-server-deployment.yml
+  - startup-msa-edge-server-deployment.yml
+  - startup-msa-admin-server-deployment.yml

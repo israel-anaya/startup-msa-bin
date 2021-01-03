@@ -1,0 +1,6 @@
+resources:
+  - security-db-server-config.yaml
+  - security-db-server-deployment.yaml
+  - startup-msa-authorization-server-configmap.yml
+  - startup-msa-authorization-server-service.yml
+  - startup-msa-authorization-server-deployment.yml

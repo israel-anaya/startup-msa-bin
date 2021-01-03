@@ -1,0 +1,59 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: security-db-server
+  namespace: startup
+  labels:
+    app: security-db-server
+spec:
+  selector:
+    app: security-db-server
+  type: NodePort
+  ports:
+    - port: 5432
+      targetPort: 5432
+      nodePort: 30433 
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: security-db-server
+  namespace: startup
+  labels:
+    app: security-db-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: security-db-server
+  template:
+    metadata:
+      labels:
+        app: security-db-server
+    spec:
+      containers:
+      - name: security-db-server
+        image: postgres:11.1-alpine
+        imagePullPolicy: IfNotPresent        
+        env:
+        - name: KUBERNETES_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: HOSTNAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        envFrom:
+        - configMapRef:
+            name: security-db-server-config
+        ports:
+        - containerPort: 5432
+          protocol: TCP
+        volumeMounts:
+        - mountPath: /var/lib/postgresql/data
+          name: postgredb
+      volumes:
+      - name: postgredb
+        persistentVolumeClaim:
+          claimName: security-db-server-pv-claim

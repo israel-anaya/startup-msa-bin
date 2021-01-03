@@ -17,9 +17,9 @@ services:
     image: postgres:11.1-alpine
     container_name: msa-db-server      
     environment:
-      POSTGRES_DB: postgres-msa-db
-      POSTGRES_PASSWORD: msa
-      POSTGRES_USER: msa
+      - POSTGRES_DB=postgres-msa-db
+      - POSTGRES_PASSWORD=msa
+      - POSTGRES_USER=msa
     ports:
       - 5432:5432
     networks: 
