@@ -1,5 +1,0 @@
-resources:
-  - elasticsearch-config.yaml
-  - elasticsearch-deployment.yaml
-  - kibana-config.yaml
-  - kibana-deployment.yaml

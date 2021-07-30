@@ -2,36 +2,17 @@ version: '3.8'
 
 networks:
   spring-network:
+    name: spring-network
     driver: bridge
 
 services:
-  redis-cache: # Redis Cache for MSA
-    image: redis:alpine
-    container_name: redis-cache
-    ports:
-      - 6379:6379
-    networks:
-      - spring-network
-
-  msa-db: # Postgress database for MSA
-    image: postgres:11.1-alpine
-    container_name: msa-db-server      
-    environment:
-      - POSTGRES_DB=postgres-msa-db
-      - POSTGRES_PASSWORD=msa
-      - POSTGRES_USER=msa
-    ports:
-      - 5432:5432
-    networks: 
-      - spring-network
-    volumes:
-      - msa-db-data:/var/lib/postgresql/data
       
   discovery-server: # Discovery Server
     image: startupframework/startup-msa-discovery-server:1.0.2.RELEASE
     container_name: discovery-server
+    restart: always
     environment:
-      - JAVA_OPTS_MEM=-Xmx74M -XX:MaxMetaspaceSize=80M -Xss366K 
+      - JAVA_MEMORY_OPTIONS=-Xmx74M -XX:MaxMetaspaceSize=80M -Xss366K 
       - SPRING_OPTS=
         --server.port=8761
         --spring.profiles.active=local
@@ -41,7 +22,6 @@ services:
         --management.endpoints.web.exposure.include=*
         --management.endpoint.health.show-details=ALWAYS
         --spring.boot.admin.client.instance.prefer-ip=true
-        --startup.dependencies=redis-cache:6379,msa-db:5432
     ports:
       - 8761:8761
     networks:
@@ -53,8 +33,9 @@ services:
   config-server: # Config Server
     image: startupframework/startup-msa-config-server:1.0.2.RELEASE
     container_name: config-server
+    restart: always
     environment:      
-      - JAVA_OPTS_MEM=-Xmx74M -XX:MaxMetaspaceSize=80M -Xss366K 
+      - JAVA_MEMORY_OPTIONS=-Xmx74M -XX:MaxMetaspaceSize=80M -Xss366K 
       - SPRING_OPTS=
         --server.port=8762
         --spring.profiles.active=local
@@ -77,9 +58,10 @@ services:
 
   edge-server: #Edge Server or Gateway
     image: startupframework/startup-msa-edge-server:1.0.2.RELEASE
-    container_name: edge-server      
+    container_name: edge-server
+    restart: always      
     environment:      
-      - JAVA_OPTS_MEM=-Xmx74M -XX:MaxMetaspaceSize=80M -Xss366K 
+      - JAVA_MEMORY_OPTIONS=-Xmx74M -XX:MaxMetaspaceSize=80M -Xss366K 
       - SPRING_OPTS=
         --server.port=8080
         --spring.profiles.active=local
@@ -103,9 +85,10 @@ services:
 
   admin-server: # Spring Boot Admin
     image: startupframework/startup-msa-admin-server:1.0.2.RELEASE
-    container_name: admin-server      
+    container_name: admin-server
+    restart: always      
     environment:      
-      - JAVA_OPTS_MEM=-Xmx74M -XX:MaxMetaspaceSize=80M -Xss366K 
+      - JAVA_MEMORY_OPTIONS=-Xmx74M -XX:MaxMetaspaceSize=80M -Xss366K 
       - SPRING_OPTS=
         --server.port=8081
         --spring.profiles.active=local
